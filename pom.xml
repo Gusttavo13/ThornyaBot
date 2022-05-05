@@ -80,6 +80,12 @@
             <artifactId>JDA</artifactId>
             <version>master-v3.7.1-gc11cec4-890</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>club.minnced</groupId>
+                    <artifactId>opus-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

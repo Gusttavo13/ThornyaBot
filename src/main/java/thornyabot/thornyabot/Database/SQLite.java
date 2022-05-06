@@ -20,7 +20,7 @@ public class SQLite {
                 "       player string,\n" +
                 "       staff string,\n" +
                 "       answer string,\n" +
-                "       isanswered string\n" +
+                "       is_answered integer\n" +
                 ");";
     }
 

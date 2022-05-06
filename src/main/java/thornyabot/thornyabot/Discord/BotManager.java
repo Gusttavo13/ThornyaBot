@@ -46,7 +46,7 @@ public class BotManager {
     }
 
     private void registerCommands(){
-        getJDA().upsertCommand("tickets", "Sistema de Tickets");
+        getJDA().upsertCommand("server", "Sistema de Tickets").queue();
     }
 
     public static JDA getJDA(){ return jda; }

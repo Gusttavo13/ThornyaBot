@@ -4,3 +4,6 @@ main: thornyabot.thornyabot.ThornyaBot
 api-version: 1.18
 authors: [ Gusttavo13 ]
 description: Discord Integration JDA
+commands: 
+  tickets:
+    description: "Tickest do Bot"

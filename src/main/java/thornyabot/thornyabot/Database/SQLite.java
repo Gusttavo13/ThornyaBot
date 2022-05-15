@@ -1,8 +1,10 @@
 package thornyabot.thornyabot.Database;
 
+import org.bukkit.Bukkit;
 import thornyabot.thornyabot.ThornyaBot;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class SQLite {
 
@@ -67,13 +69,14 @@ public class SQLite {
 
 
         }else{
-            String sqlPlayer = "INSERT INTO Tickets (ticket, nickname, type, message, is_answered, player) VALUES ('', ?, ?, ?, 0, ?)";
+            String sqlPlayer = "INSERT INTO Tickets (ticket, nickname, type, message, is_answered, player) VALUES (?, ?, ?, ?, 0, ?)";
             try (Connection conn = connect();
                 PreparedStatement pstmt = conn.prepareStatement(sqlPlayer)) {
-            pstmt.setString(1, nickname);
-            pstmt.setString(2, type);
-            pstmt.setString(3, message);
-            pstmt.setString(4, player[0]);
+            pstmt.setString(1, ticketID);
+            pstmt.setString(2, nickname);
+            pstmt.setString(3, type);
+            pstmt.setString(4, message);
+            pstmt.setString(5, player[0]);
                 pstmt.executeUpdate();
                 pstmt.close();
             }catch (SQLException e) {
@@ -83,14 +86,75 @@ public class SQLite {
         }
     }
 
-    public static void updateTicket(String id, String staff, String answer) {
-        String sql = "UPDATE Tickets SET staff = ?, answer = ?, is_answered = 1 WHERE id = ?";
+    public static String getUserIDByTicket(String ticketID){
+        String userID = "";
+        String sql = "SELECT nickname FROM Tickets WHERE ticket = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+            pstmt.setString(1, ticketID);
+            ResultSet rs  = pstmt.executeQuery();
+            while(rs.next()){
+                userID = rs.getString(1);
+            }
+            rs.close();
+        }catch (SQLException e){
+
+            System.out.println(e.getMessage());
+        }
+        return userID;
+    }
+
+    public static int getCountTicketsFromPlayer(String player){
+        int tickets = 0;
+        String sql = "SELECT count(nickname) FROM Tickets WHERE nickname = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+            pstmt.setString(1, player);
+            ResultSet rs  = pstmt.executeQuery();
+            while(rs.next()){
+                tickets = rs.getInt(1);
+            }
+            rs.close();
+        }catch (SQLException e){
+
+            System.out.println(e.getMessage());
+        }
+        return tickets;
+    }
+
+    public static ArrayList<String> getTicketsFromPlayer(String player){
+        ArrayList<String> tickets = new ArrayList<String>();
+        String sql = "SELECT ticket, nickname, type, staff, is_answered FROM Tickets WHERE nickname = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+            pstmt.setString(1, player);
+            ResultSet rs  = pstmt.executeQuery();
+            while(rs.next()){
+                tickets.add(rs.getString("ticket") + "&&&" +
+                                rs.getString("nickname") + "&&&" +
+                                rs.getString("type") + "&&&" +
+                                rs.getString("staff") + "&&&" +
+                                rs.getString("is_answered") + "&&&");
+            }
+            rs.close();
+        }catch (SQLException e){
+
+            System.out.println(e.getMessage());
+        }
+        return tickets;
+    }
+
+    public static void updateTicket(String ticketID, String staff, String answer) {
+        String sql = "UPDATE Tickets SET staff = ?, answer = ?, is_answered = 1 WHERE ticket = ?";
 
         try (Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
         pstmt.setString(1, staff);
         pstmt.setString(2, answer);
-        pstmt.setString(3, id);
+        pstmt.setString(3, ticketID);
         pstmt.executeUpdate();
             pstmt.close();
         }catch (SQLException e){

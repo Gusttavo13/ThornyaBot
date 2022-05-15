@@ -2,6 +2,8 @@ package thornyabot.thornyabot.Discord.Commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import thornyabot.thornyabot.Database.SQLite;
 import thornyabot.thornyabot.Discord.BotManager;
 import thornyabot.thornyabot.ThornyaBot;
+import thornyabot.thornyabot.Utils.Log;
 import thornyabot.thornyabot.Utils.RandomUtil;
 import thornyabot.thornyabot.Utils.TimeUnit;
 
@@ -32,7 +35,7 @@ public class Tickets extends ListenerAdapter {
 
     private String messageID = "";
 
-    private String chatID = RandomUtil.randomString(8);
+    private String chatID = "";
 
     public void onSelectMenuTicket(SelectMenuInteractionEvent event){
         if(event.getComponent().getId() == "ticket:type"){
@@ -50,7 +53,7 @@ public class Tickets extends ListenerAdapter {
                             .setMaxLength(1000)
                             .build();
 
-                    Modal modalReport = Modal.create("ticketreasonplayer" + chatID, "Denúncia de Jogador")
+                    Modal modalReport = Modal.create("ticketreasonplayer" + event.getChannel().getName().split("-")[1], "Denúncia de Jogador")
                             .addActionRows(ActionRow.of(player), ActionRow.of(reason))
                             .build();
 
@@ -63,7 +66,7 @@ public class Tickets extends ListenerAdapter {
                             .setMaxLength(1000)
                             .build();
 
-                    Modal modalBug = Modal.create("ticketbug" + chatID, "Reportar Bugs")
+                    Modal modalBug = Modal.create("ticketbugs" + event.getChannel().getName().split("-")[1], "Reportar Bugs")
                             .addActionRows(ActionRow.of(bug))
                             .build();
 
@@ -76,7 +79,7 @@ public class Tickets extends ListenerAdapter {
                             .setMaxLength(1000)
                             .build();
 
-                    Modal modalQuestion = Modal.create("ticketquestion" + chatID, "Dúvidas")
+                    Modal modalQuestion = Modal.create("ticketquestion" + event.getChannel().getName().split("-")[1], "Dúvidas")
                             .addActionRows(ActionRow.of(question))
                             .build();
 
@@ -89,7 +92,7 @@ public class Tickets extends ListenerAdapter {
                             .setMaxLength(1000)
                             .build();
 
-                    Modal modalSuggestion = Modal.create("ticketsuggestion" + chatID, "Sugestão para o Servidor")
+                    Modal modalSuggestion = Modal.create("ticketsuggestion" + event.getChannel().getName().split("-")[1], "Sugestão para o Servidor")
                             .addActionRows(ActionRow.of(suggestion))
                             .build();
 
@@ -103,33 +106,33 @@ public class Tickets extends ListenerAdapter {
 
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
-        if (event.getModalId().equals("ticketreasonplayer" + chatID)) {
+        if (event.getModalId().equals("ticketreasonplayer" + event.getChannel().getName().split("-")[1])) {
             String player = event.getValue("ticketchat:player").getAsString();
             String reason = event.getValue("ticketchat:reason").getAsString();
 
-            SQLite.createTicket(chatID, event.getUser().getId(), "report-player", reason, player);
+            SQLite.createTicket(event.getChannel().getName().split("-")[1], event.getUser().getId(), "Denúncia", reason, player);
 
             event.reply("Obrigado pelo seu reporte!").setEphemeral(true).queue();
         }
-        if (event.getModalId().equals("ticketbug" + chatID)) {
+        if (event.getModalId().equals("ticketbug" + event.getChannel().getName().split("-")[1])) {
             String reason = event.getValue("ticketchat:bug").getAsString();
 
-            SQLite.createTicket(chatID, event.getUser().getId(), "bugs", reason);
+            SQLite.createTicket(event.getChannel().getName().split("-")[1], event.getUser().getId(), "Bugs", reason);
 
             event.reply("Obrigado pelo seu reporte!").setEphemeral(true).queue();
         }
-        if (event.getModalId().equals("ticketquestion" + chatID)) {
+        if (event.getModalId().equals("ticketquestion" + event.getChannel().getName().split("-")[1])) {
             String reason = event.getValue("ticketchat:question").getAsString();
 
-            SQLite.createTicket(chatID, event.getUser().getId(), "question", reason);
+            SQLite.createTicket(event.getChannel().getName().split("-")[1], event.getUser().getId(), "Perguntas", reason);
 
             event.reply("Obrigado pelo sua dúvida!").setEphemeral(true).queue();
         }
 
-        if (event.getModalId().equals("ticketsuggestion" + chatID)) {
+        if (event.getModalId().equals("ticketsuggestion" + event.getChannel().getName().split("-")[1])) {
             String reason = event.getValue("ticketchat:suggestion").getAsString();
 
-            SQLite.createTicket(chatID, event.getUser().getId(), "suggestion", reason);
+            SQLite.createTicket(event.getChannel().getName().split("-")[1], event.getUser().getId(), "Sugestões", reason);
 
             event.reply("Obrigado pelo sua sugestão!").setEphemeral(true).queue();
         }
@@ -154,7 +157,16 @@ public class Tickets extends ListenerAdapter {
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
         if (event.getComponentId().equals("ticketchat:close")) {
-            event.getChannel().delete().queue();
+
+            Role role = BotManager.guild.getRoleById(973727876161613854L);
+            if(event.getMember().getRoles().contains(role)){
+                Log.LogDiscordText("O Staff " + event.getMember().getAsMention() + " fechou o ticket " + event.getChannel().getName().split("-")[1]);
+                SQLite.updateTicket(event.getChannel().getName().split("-")[1], event.getMember().getId(), "");
+                event.getChannel().delete().queue();
+
+            }else{
+                event.reply("Você não pode fechar seu próprio ticket, espere um staff!").setEphemeral(true).queue();
+            }
         }
         if(event.getMessageId().equalsIgnoreCase(messageID)){
             if (event.getComponentId().equals("addticket")) {
@@ -183,6 +195,7 @@ public class Tickets extends ListenerAdapter {
                         .setDescription("Procuramos resolver seu problema o mais rápido o possível");
 
                 //Canal criado
+                chatID = RandomUtil.randomString(12);
                 BotManager.guild.getCategoryById("974126542345076836").createTextChannel("ticket-" + chatID)
                         .addPermissionOverride(event.getMember(), allow, null).queue(textChannel -> {
                             textChannel.sendMessage(event.getMember().getAsMention()).queue(message1 -> {

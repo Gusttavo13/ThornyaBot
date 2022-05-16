@@ -52,8 +52,7 @@ public class SQLite {
     }
 
     public static void createTicket(String ticketID, String nickname, String type, String message, String... player) {
-
-        if(player == null){
+        if(player.length <= 0){
             String sqlNoPlayer = "INSERT INTO Tickets (ticket, nickname, type, message, is_answered) VALUES (?, ?, ?, ?, 0)";
             try (Connection conn = connect();
                  PreparedStatement pstmt = conn.prepareStatement(sqlNoPlayer)) {

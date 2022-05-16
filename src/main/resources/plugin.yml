@@ -2,7 +2,7 @@ name: ThornyaBot
 version: '${project.version}'
 main: thornyabot.thornyabot.ThornyaBot
 api-version: 1.18
-authors: [ Gusttavo13 ]
+authors: [ Gusttavo13, _Vulkano_ ]
 description: Discord Integration JDA
 commands: 
   tickets:

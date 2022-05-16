@@ -37,8 +37,10 @@ public class Tickets extends ListenerAdapter {
 
     private String chatID = "";
 
-    public void onSelectMenuTicket(SelectMenuInteractionEvent event){
-        if(event.getComponent().getId() == "ticket:type"){
+    @Override
+    public void onSelectMenuInteraction(SelectMenuInteractionEvent event){
+
+        if(event.getComponentId().equalsIgnoreCase("ticket:type")){
             switch (event.getValues().get(0)){
                 case "report-player":
                     TextInput player = TextInput.create("ticketchat:player", "Qual jogador deseja denunciar", TextInputStyle.SHORT)
@@ -59,8 +61,8 @@ public class Tickets extends ListenerAdapter {
 
                     event.replyModal(modalReport).queue();
                     break;
-                case "bug":
-                    TextInput bug = TextInput.create("ticketchat:bug", "Descreva o que ocorreu", TextInputStyle.PARAGRAPH)
+                case "bugs": ;
+                    TextInput bug = TextInput.create("ticketchat:bugs", "Descreva o que ocorreu", TextInputStyle.PARAGRAPH)
                             .setPlaceholder("Descreva o bug!")
                             .setMinLength(15)
                             .setMaxLength(1000)
@@ -175,7 +177,7 @@ public class Tickets extends ListenerAdapter {
                         .setPlaceholder("Qual o seu problema?")
                         .setMinValues(1)
                         .setMaxValues(1)
-                        .addOption("Dúvidas", "questions")
+                        .addOption("Dúvidas", "questions", "", Emoji.fromUnicode("\uD83D\uDC40"))
                         .addOption("Bugs", "bugs")
                         .addOption("Reportar Jogador", "report-player")
                         .addOption("Sugestão", "suggestion")

@@ -91,5 +91,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>dev.triumphteam</groupId>
+            <artifactId>triumph-gui</artifactId>
+            <version>3.1.2</version> <!-- replace version here -->
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

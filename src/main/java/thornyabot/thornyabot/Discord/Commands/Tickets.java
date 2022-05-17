@@ -144,7 +144,7 @@ public class Tickets extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
-        if (!event.getName().equals("server")) return; // make sure we handle the right command
+        if (!event.getName().equals("devticket")) return; // make sure we handle the right command
         event.deferReply().queue();
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("✅ Sistema de tickets do Thornya ✅")

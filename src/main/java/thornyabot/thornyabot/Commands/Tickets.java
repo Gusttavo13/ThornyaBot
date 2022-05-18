@@ -94,22 +94,42 @@ public class Tickets implements CommandExecutor {
     private static void ChooseTypeReport(Player p){
         // Main constructor
         Gui gui = Gui.gui()
-                .title(Component.text("§cO que você deseja Reportar?"))
+                .title(Component.text(Messages.TICKETS_CHOOSE_TYPE_MENU_TITLE))
                 .rows(3)
                 .disableAllInteractions()
                 .create();
 
-        GuiItem voltar = ItemBuilder.from(Material.BARRIER).name(Component.text("§cVoltar")).asGuiItem(event -> {
+        GuiItem voltar = ItemBuilder.from(Material.BARRIER).name(Component.text(Messages.TICKETS_BACK_TITLE)).asGuiItem(event -> {
             if(event.isLeftClick()){
                 TicketsGUI(p);
             }
         });
-        GuiItem reportplayer = ItemBuilder.from(Material.DIAMOND_SWORD).name(Component.text("§cDenunciar Jogador")).asGuiItem(event -> {
+        GuiItem reportplayer = ItemBuilder.from(Material.DIAMOND_SWORD).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_REPORT_TITLE)).asGuiItem(event -> {
             if(event.isLeftClick()){
-                p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
+                gui.close(p);
+                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_REPORT_ASK_PLAYER_NAME_MESSAGE);
+                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
+                ChatInput.waitForPlayer(ThornyaBot.pl, p, callbackPlayer ->{
+                    if(callbackPlayer.equalsIgnoreCase("cancel") || callbackPlayer.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)){
+                        p.sendMessage(Messages.TICKETS_REPORT_CANCELED);
+                        return;
+                    }
+                    p.sendMessage(Messages.TICKETS_REPORT_ASK_MESSAGE);
+                    p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
+                    ChatInput.waitForPlayer(ThornyaBot.pl, p, callbackMessage ->{
+                        if(callbackMessage.equalsIgnoreCase("cancel") || callbackMessage.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)){
+                            return;
+                        }
+                        String ticketid = RandomUtil.randomString(12);
+                        p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
+                        SQLite.createTicket(ticketid, p.getName(), "Denúncia", callbackMessage, callbackPlayer);
+                    });
+
+
+                });
             }
         });
-        GuiItem suggestion = ItemBuilder.from(Material.BEACON).name(Component.text("§cSugestão")).asGuiItem(event -> {
+        GuiItem suggestion = ItemBuilder.from(Material.BEACON).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_SUGGESTION_TITLE)).asGuiItem(event -> {
             if(event.isLeftClick()){
                 gui.close(p);
                 p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_SUGGESTION_ASK_MESSAGE);
@@ -124,7 +144,7 @@ public class Tickets implements CommandExecutor {
                 });
             }
         });
-        GuiItem question = ItemBuilder.from(Material.WRITABLE_BOOK).name(Component.text("§cDúvida")).asGuiItem(event -> {
+        GuiItem question = ItemBuilder.from(Material.WRITABLE_BOOK).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_QUESTION_TITLE)).asGuiItem(event -> {
             if(event.isLeftClick()){
                 gui.close(p);
                 p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_QUESTION_ASK_MESSAGE);
@@ -139,7 +159,7 @@ public class Tickets implements CommandExecutor {
                 });
             }
         });
-        GuiItem bug = ItemBuilder.from(Material.KNOWLEDGE_BOOK).name(Component.text("§cBug")).asGuiItem(event -> {
+        GuiItem bug = ItemBuilder.from(Material.KNOWLEDGE_BOOK).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_BUG_TITLE)).asGuiItem(event -> {
             if(event.isLeftClick()){
                 gui.close(p);
                 p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_BUGS_ASK_MESSAGE);

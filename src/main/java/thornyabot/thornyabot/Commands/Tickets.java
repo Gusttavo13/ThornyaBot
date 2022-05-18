@@ -13,12 +13,85 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import thornyabot.thornyabot.Database.SQLite;
+import thornyabot.thornyabot.ThornyaBot;
+import thornyabot.thornyabot.Utils.ChatManager.ChatInput;
+import thornyabot.thornyabot.Utils.Config;
+import thornyabot.thornyabot.Utils.Messages;
+import thornyabot.thornyabot.Utils.RandomUtil;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Tickets implements CommandExecutor {
 
-    private static void OpenTicketGUI(Player p){
+    /**
+     * Tela inicial dos Tickets
+     *
+     * @param p Player
+     *
+     */
+    private static void TicketsGUI(Player p){
+        // Main constructor
+        PaginatedGui gui = Gui.paginated()
+                .title(Component.text(Messages.TICKETGUI_MENU_TITLE.replace("$count$", String.valueOf(SQLite.getCountTicketsFromPlayer(p.getName())))))
+                .rows(6)
+                .disableAllInteractions()
+                .create();
+        GuiItem addTicket = ItemBuilder.from(Material.PAPER).name(Component.text("§2Abrir Ticket")).asGuiItem(event -> {
+            if(event.isLeftClick()){
+                ChooseTypeReport(p);
+            }
+        });
+
+
+        SQLite.getTicketsFromPlayer(p.getName()).forEach(ticketInutil -> {
+
+            ArrayList<Component> lore = new ArrayList<Component>();
+
+            Messages.TICKETS_ITEM_LORE.forEach(loreConfig -> {
+                lore.add(Component.text(loreConfig
+                        .replaceAll("&", "§")
+                        .replace("{type}", ticketInutil.split("&&&")[2])
+                        .replace("{staff_answer}",
+                                Objects.requireNonNull(ticketInutil.split("&&&")[4].equalsIgnoreCase("1") ?
+                                        Config.getFile("config.yml").getString("messages.tickets.ticketgui.tickets_item.tickets_staff_answer")
+                                                .replaceAll("&", "§")
+                                                .replace("$staff$", ticketInutil.split("&&&")[3]) : ""))
+                        .replace("{answer}",
+                                Objects.requireNonNull(ticketInutil.split("&&&")[4].equalsIgnoreCase("1") ?
+                                        Config.getFile("config.yml").getString("messages.tickets.ticketgui.tickets_item.tickets_answer")
+                                                .replace("&", "§")
+                                        :
+                                        Config.getFile("config.yml").getString("messages.tickets.ticketgui.tickets_item.tickets_no_answer")
+                                                .replace("&", "§")
+                                )
+                        )
+                ));
+
+            });
+            GuiItem tickets = ItemBuilder.from(Material.EMERALD)
+                    .name(Component.text(Messages.TICKETS_ITEM_TITLE.replace("{ticketid}", ticketInutil.split("&&&")[0])))
+                    .lore(lore)
+                    .asGuiItem(event -> {
+                        if(event.isLeftClick()){
+                            p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
+                        }
+                    });
+
+            lore.clear();
+            gui.addItem(tickets);
+        });
+        gui.setItem(6, 5, addTicket);
+        gui.open(p);
+    }
+
+    /**
+     * Escolher o tipo de ticket
+     *
+     * @param p Player
+     *
+     */
+    private static void ChooseTypeReport(Player p){
         // Main constructor
         Gui gui = Gui.gui()
                 .title(Component.text("§cO que você deseja Reportar?"))
@@ -38,17 +111,47 @@ public class Tickets implements CommandExecutor {
         });
         GuiItem suggestion = ItemBuilder.from(Material.BEACON).name(Component.text("§cSugestão")).asGuiItem(event -> {
             if(event.isLeftClick()){
-                p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
+                gui.close(p);
+                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_SUGGESTION_ASK_MESSAGE);
+                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
+                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback -> {
+                    if (callback.equalsIgnoreCase("cancel") || callback.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
+                        return;
+                    }
+                    String ticketid = RandomUtil.randomString(12);
+                    p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
+                    SQLite.createTicket(ticketid, p.getName(), "Sugestões", callback);
+                });
             }
         });
         GuiItem question = ItemBuilder.from(Material.WRITABLE_BOOK).name(Component.text("§cDúvida")).asGuiItem(event -> {
             if(event.isLeftClick()){
-                p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
+                gui.close(p);
+                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_QUESTION_ASK_MESSAGE);
+                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
+                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback -> {
+                    if (callback.equalsIgnoreCase("cancel") || callback.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
+                        return;
+                    }
+                    String ticketid = RandomUtil.randomString(12);
+                    p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
+                    SQLite.createTicket(ticketid, p.getName(), "Sugestões", callback);
+                });
             }
         });
         GuiItem bug = ItemBuilder.from(Material.KNOWLEDGE_BOOK).name(Component.text("§cBug")).asGuiItem(event -> {
             if(event.isLeftClick()){
-                p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
+                gui.close(p);
+                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_BUGS_ASK_MESSAGE);
+                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
+                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback -> {
+                    if (callback.equalsIgnoreCase("cancel") || callback.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
+                        return;
+                    }
+                    String ticketid = RandomUtil.randomString(12);
+                    p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
+                    SQLite.createTicket(ticketid, p.getName(), "Sugestões", callback);
+                });
             }
         });
 
@@ -59,48 +162,7 @@ public class Tickets implements CommandExecutor {
         gui.setItem(2, 8, reportplayer);
         gui.open(p);
     }
-    private static void TicketsGUI(Player p){
-        // Main constructor
-        PaginatedGui gui = Gui.paginated()
-                .title(Component.text("§cTickets Abertos - [§f" + SQLite.getCountTicketsFromPlayer(p.getName()) + "§c]"))
-                .rows(6)
-                .disableAllInteractions()
-                .create();
-        GuiItem addTicket = ItemBuilder.from(Material.PAPER).name(Component.text("§2Abrir Ticket")).asGuiItem(event -> {
-            if(event.isLeftClick()){
-                OpenTicketGUI(p);
-            }
-        });
 
-
-        SQLite.getTicketsFromPlayer(p.getName()).forEach(ticketInutil -> {
-
-            ArrayList<Component> lore = new ArrayList<Component>();
-            lore.add(Component.text(" "));
-            lore.add(Component.text("§a" + ticketInutil.split("&&&")[2]));
-            lore.add(Component.text(" "));
-            if(ticketInutil.split("&&&")[4].equalsIgnoreCase("1")){
-                lore.add(Component.text("§4STAFF: " + ticketInutil.split("&&&")[3]));
-                lore.add(Component.text("§aRespondido"));
-            }else{
-                lore.add(Component.text("§4Não Respondido"));
-            }
-
-            GuiItem tickets = ItemBuilder.from(Material.EMERALD)
-                    .name(Component.text("§eTicket #" + ticketInutil.split("&&&")[0]))
-                    .lore(lore)
-                    .asGuiItem(event -> {
-                if(event.isLeftClick()){
-                    p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
-                }
-            });
-
-            lore.clear();
-            gui.addItem(tickets);
-        });
-        gui.setItem(6, 5, addTicket);
-        gui.open(p);
-    }
 
 
     @Override
@@ -113,21 +175,8 @@ public class Tickets implements CommandExecutor {
                     TicketsGUI(p);
 
                 }else{
-                    p.sendMessage("§cVocê não tem permissão para usar esse comando.");
+                    p.sendMessage(Messages.NO_PERMISSION);
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
             }else{
                 Bukkit.getConsoleSender().sendMessage("§cComando permitido somente para jogadores");
             }

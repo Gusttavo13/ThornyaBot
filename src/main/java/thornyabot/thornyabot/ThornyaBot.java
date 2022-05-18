@@ -1,6 +1,8 @@
 package thornyabot.thornyabot;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import thornyabot.thornyabot.Commands.Tickets;
 import thornyabot.thornyabot.Database.SQLite;
@@ -18,6 +20,7 @@ public final class ThornyaBot extends JavaPlugin {
         new SQLite();
         new BotManager();
         registrarComandos();
+
     }
 
     @Override
@@ -31,5 +34,9 @@ public final class ThornyaBot extends JavaPlugin {
 
     public void registrarComando(String nome, CommandExecutor comando) {
         this.getCommand(nome).setExecutor(comando);
+    }
+
+    public void registrarListener(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, this);
     }
 }

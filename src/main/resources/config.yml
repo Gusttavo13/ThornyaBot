@@ -7,3 +7,49 @@ description: "Construindo um novo planeta..."
 
 channels:
   log: "736398288936370177"
+
+
+messages:
+  no_permission: "&cVocê não tem permissão para usar esse comando."
+  tickets:
+    prefix: "&7[&eTickets&7] "
+    back_item:
+      back_title: "Voltar"
+      back_lore:
+        - ""
+        - "§2Clique aqui para voltar."
+    cancel_message: "Digite &ccancel &fou &ccancelar &fpara sair."
+    cancel_word: "Cancelar" #Não use cores
+    ticketgui:
+      menu_title: "&4Tickets Abertos - [&f$count$&4]"
+      ticketadd_item:
+        ticketadd_title: "&2Abrir Ticket"
+        ticketadd_lore:
+          - " "
+          - "&bAbra um ticket"
+      tickets_item:
+        tickets_title: "&eTicket #{ticketid}"
+        tickets_lore:
+          - " "
+          - "&a{type}"
+          - " "
+          - "{staff_answer}"
+          - "{answer}"
+        tickets_staff_answer: "&4STAFF: $staff$"
+        tickets_no_answer: "&4Não Respondido"
+        tickets_answer: "&aRespondido"
+    choosetypereport:
+      menu_title: "&cEscolha o Tipo de Ticket"
+      report_title: "&c Reportar um Jogador"
+      suggestion_title: "&bDê sua Sugestão"
+      question_title: "&6Nos diga sua Dúvida"
+      bug_title: "&dReporte um BUG"
+      ask_report_player_name_message: "&cQual jogador deseja reportar"
+      ask_report_message: "&cNos diga o que aconteceu"
+      ask_suggestion_message: "&cDiga sua sugestão"
+      ask_bugs_message: "&cReporte o que ocorreu"
+      ask_question_message: "&cQual sua pergunta"
+      report_sucess: "&cTicket gerado com sucesso, também foi criado um canal no discord com o id: {ticketid}"
+      report_canceled: "&aTicket Cancelado, caso queira, crie o ticket novamente"
+
+

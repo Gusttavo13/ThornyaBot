@@ -19,8 +19,7 @@ import thornyabot.thornyabot.Utils.Config;
 import thornyabot.thornyabot.Utils.Messages;
 import thornyabot.thornyabot.Utils.RandomUtil;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 public class Tickets implements CommandExecutor {
 
@@ -84,6 +83,64 @@ public class Tickets implements CommandExecutor {
         gui.setItem(6, 5, addTicket);
         gui.open(p);
     }
+    /**
+     * Criar categoria
+     *
+     *
+     * @param category_name String
+     * @param p Player
+     * @param gui Gui
+     * @param material Material
+     * @param item_title String
+     * @param messages List<String>
+     * @param messages2 List<String> Optional
+     * @param success_message String
+     * @param cancel_message String
+     * @param discord_chat Boolean
+     *
+     * @return GuiItem
+     */
+    private static GuiItem CreateCategory(String category_name, Player p, Gui gui, Material material, String item_title, List<String> messages, List<String> messages2,String success_message, String cancel_message, Boolean discord_chat){
+        GuiItem item = ItemBuilder.from(material).name(Component.text(item_title)).asGuiItem(event -> {
+            if(event.isLeftClick()){
+                gui.close(p);
+                messages.forEach(message ->{
+                    p.sendMessage(message);
+                });
+                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback1 ->{
+                    if(callback1.equalsIgnoreCase("cancel") || callback1.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)){
+                        p.sendMessage(cancel_message);
+                        return;
+                    }
+                    if(messages2.isEmpty()){
+                        String ticketid = RandomUtil.randomString(12);
+                        p.sendMessage(success_message.replace("{ticketid}", ticketid));
+                        SQLite.createTicket(ticketid, p.getName(), category_name, callback1);
+                        if(discord_chat){
+                            //criar aqui o sistema do canal
+                        }
+                    }
+                    if(messages2.size() > 0) {
+                        messages2.forEach(message -> {
+                            p.sendMessage(message);
+                        });
+                        ChatInput.waitForPlayer(ThornyaBot.pl, p, callback2 -> {
+                            if (callback2.equalsIgnoreCase("cancel") || callback2.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
+                                return;
+                            }
+                            String ticketid = RandomUtil.randomString(12);
+                            p.sendMessage(success_message.replace("{ticketid}", ticketid));
+                            SQLite.createTicket(ticketid, p.getName(), category_name, callback2, callback1);
+                            if (discord_chat) {
+                                //criar aqui o sistema do canal
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        return item;
+    }
 
     /**
      * Escolher o tipo de ticket
@@ -104,82 +161,37 @@ public class Tickets implements CommandExecutor {
                 TicketsGUI(p);
             }
         });
-        GuiItem reportplayer = ItemBuilder.from(Material.DIAMOND_SWORD).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_REPORT_TITLE)).asGuiItem(event -> {
-            if(event.isLeftClick()){
-                gui.close(p);
-                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_REPORT_ASK_PLAYER_NAME_MESSAGE);
-                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
-                ChatInput.waitForPlayer(ThornyaBot.pl, p, callbackPlayer ->{
-                    if(callbackPlayer.equalsIgnoreCase("cancel") || callbackPlayer.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)){
-                        p.sendMessage(Messages.TICKETS_REPORT_CANCELED);
-                        return;
-                    }
-                    p.sendMessage(Messages.TICKETS_REPORT_ASK_MESSAGE);
-                    p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
-                    ChatInput.waitForPlayer(ThornyaBot.pl, p, callbackMessage ->{
-                        if(callbackMessage.equalsIgnoreCase("cancel") || callbackMessage.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)){
-                            return;
-                        }
-                        String ticketid = RandomUtil.randomString(12);
-                        p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
-                        SQLite.createTicket(ticketid, p.getName(), "Denúncia", callbackMessage, callbackPlayer);
-                    });
-
-
-                });
-            }
-        });
-        GuiItem suggestion = ItemBuilder.from(Material.BEACON).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_SUGGESTION_TITLE)).asGuiItem(event -> {
-            if(event.isLeftClick()){
-                gui.close(p);
-                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_SUGGESTION_ASK_MESSAGE);
-                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
-                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback -> {
-                    if (callback.equalsIgnoreCase("cancel") || callback.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
-                        return;
-                    }
-                    String ticketid = RandomUtil.randomString(12);
-                    p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
-                    SQLite.createTicket(ticketid, p.getName(), "Sugestões", callback);
-                });
-            }
-        });
-        GuiItem question = ItemBuilder.from(Material.WRITABLE_BOOK).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_QUESTION_TITLE)).asGuiItem(event -> {
-            if(event.isLeftClick()){
-                gui.close(p);
-                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_QUESTION_ASK_MESSAGE);
-                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
-                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback -> {
-                    if (callback.equalsIgnoreCase("cancel") || callback.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
-                        return;
-                    }
-                    String ticketid = RandomUtil.randomString(12);
-                    p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
-                    SQLite.createTicket(ticketid, p.getName(), "Sugestões", callback);
-                });
-            }
-        });
-        GuiItem bug = ItemBuilder.from(Material.KNOWLEDGE_BOOK).name(Component.text(Messages.TICKETS_CHOOSE_TYPE_BUG_TITLE)).asGuiItem(event -> {
-            if(event.isLeftClick()){
-                gui.close(p);
-                p.sendMessage(Messages.TICKETS_PREFIX + Messages.TICKETS_BUGS_ASK_MESSAGE);
-                p.sendMessage(Messages.TICKETS_CANCEL_MESSAGE);
-                ChatInput.waitForPlayer(ThornyaBot.pl, p, callback -> {
-                    if (callback.equalsIgnoreCase("cancel") || callback.equalsIgnoreCase(Messages.TICKETS_CANCEL_WORD)) {
-                        return;
-                    }
-                    String ticketid = RandomUtil.randomString(12);
-                    p.sendMessage(Messages.TICKETS_REPORT_SUCESS.replace("{ticketid}", ticketid));
-                    SQLite.createTicket(ticketid, p.getName(), "Sugestões", callback);
-                });
-            }
-        });
 
         gui.setItem(3, 5, voltar);
-        gui.setItem(2, 2, bug);
-        gui.setItem(2, 4, suggestion);
-        gui.setItem(2, 6, question);
-        gui.setItem(2, 8, reportplayer);
+
+        //Categoria de Bugs
+
+        gui.setItem(2, 2, CreateCategory("Bugs", p, gui, Material.EMERALD,
+                Messages.TICKETS_CHOOSE_TYPE_BUG_TITLE,
+                Arrays.asList(Messages.TICKETS_PREFIX + Messages.TICKETS_BUGS_ASK_MESSAGE, Messages.TICKETS_CANCEL_MESSAGE),
+                Collections.EMPTY_LIST, Messages.TICKETS_REPORT_SUCESS, Messages.TICKETS_REPORT_CANCELED, true));
+
+        //Categoria de Sugestões
+
+        gui.setItem(2, 4, CreateCategory("Sugestões", p, gui, Material.BEACON,
+                Messages.TICKETS_CHOOSE_TYPE_SUGGESTION_TITLE,
+                Arrays.asList(Messages.TICKETS_PREFIX + Messages.TICKETS_SUGGESTION_ASK_MESSAGE, Messages.TICKETS_CANCEL_MESSAGE),
+                Collections.EMPTY_LIST, Messages.TICKETS_REPORT_SUCESS, Messages.TICKETS_REPORT_CANCELED, false));
+        //Categoria de Dúvida
+
+        gui.setItem(2, 6, CreateCategory("Dúvida", p, gui, Material.WRITABLE_BOOK,
+                Messages.TICKETS_CHOOSE_TYPE_QUESTION_TITLE,
+                Arrays.asList(Messages.TICKETS_PREFIX + Messages.TICKETS_QUESTION_ASK_MESSAGE, Messages.TICKETS_CANCEL_MESSAGE),
+                Collections.EMPTY_LIST, Messages.TICKETS_REPORT_SUCESS, Messages.TICKETS_REPORT_CANCELED, true));
+
+        //Categoria de Denúncia
+
+        gui.setItem(2, 8, CreateCategory("Denúncia", p, gui, Material.DIAMOND,
+                Messages.TICKETS_CHOOSE_TYPE_REPORT_TITLE,
+                Arrays.asList(Messages.TICKETS_PREFIX + Messages.TICKETS_REPORT_ASK_PLAYER_NAME_MESSAGE, Messages.TICKETS_CANCEL_MESSAGE),
+                Arrays.asList(Messages.TICKETS_REPORT_ASK_MESSAGE, Messages.TICKETS_CANCEL_MESSAGE),
+                Messages.TICKETS_REPORT_SUCESS, Messages.TICKETS_REPORT_CANCELED, true));
+
         gui.open(p);
     }
 
@@ -193,7 +205,6 @@ public class Tickets implements CommandExecutor {
                 Player p = (Player)snd;
                 if(p.hasPermission("tickets.use")){
                     TicketsGUI(p);
-
                 }else{
                     p.sendMessage(Messages.NO_PERMISSION);
                 }

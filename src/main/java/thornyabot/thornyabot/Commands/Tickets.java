@@ -73,7 +73,27 @@ public class Tickets implements CommandExecutor {
                     .lore(lore)
                     .asGuiItem(event -> {
                         if(event.isLeftClick()){
-                            p.sendMessage("Você clicou no " + event.getCurrentItem().getItemMeta().getDisplayName());
+                            if(p.hasPermission("tickets.use")){
+                                p.sendMessage("§a+=============================+");
+                                if(event.getCurrentItem() != null){
+                                    String[] ticketData = SQLite.getTicketByID(event.getCurrentItem().getItemMeta().getDisplayName().split("#")[1]).split("&&&");
+                                    p.sendMessage(" §a| " + "§eSeu TicketID: §6" + ticketData[0]);
+                                    if(ticketData[1].equalsIgnoreCase("Denúncia")) p.sendMessage(" §a| " + "§eJogador denunciado: §c" + ticketData[3]);
+                                    p.sendMessage(" §a| ");
+                                    p.sendMessage(" §a| " + "§aMensagem: §f" + ticketData[2]);
+                                    if(ticketData[6].equalsIgnoreCase("1")){
+                                        p.sendMessage("§a+=============================+");
+                                        if(ticketData[5].equalsIgnoreCase("null")){
+                                            p.sendMessage(" §a| " + "§eVisualizado por §4" + ticketData[4]);
+                                        }else{
+                                            p.sendMessage(" §a| " + "§eRespondido por §4" + ticketData[4]);
+                                            p.sendMessage(" §a| " + "§eResposta: §f" + ticketData[5]);
+                                        }
+                                    }
+                                }
+                                p.sendMessage("§a+=============================+");
+                                gui.close(p);
+                            }
                         }
                     });
 

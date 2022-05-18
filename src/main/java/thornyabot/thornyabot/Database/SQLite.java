@@ -85,23 +85,29 @@ public class SQLite {
         }
     }
 
-    public static String getUserIDByTicket(String ticketID){
-        String userID = "";
-        String sql = "SELECT nickname FROM Tickets WHERE ticket = ?";
+    public static String getTicketByID(String ticketID){
+        String ticket = "";
+        String sql = "SELECT ticket, type, message, player, staff, answer, is_answered FROM Tickets WHERE ticket = ?";
 
         try (Connection conn = connect();
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
             pstmt.setString(1, ticketID);
             ResultSet rs  = pstmt.executeQuery();
             while(rs.next()){
-                userID = rs.getString(1);
+                ticket = rs.getString("ticket") + "&&&" +
+                        rs.getString("type") + "&&&" +
+                        rs.getString("message") + "&&&" +
+                        rs.getString("player") + "&&&" +
+                        rs.getString("staff") + "&&&" +
+                        rs.getString("answer") + "&&&" +
+                        rs.getString("is_answered");
             }
             rs.close();
         }catch (SQLException e){
 
             System.out.println(e.getMessage());
         }
-        return userID;
+        return ticket;
     }
 
     public static int getCountTicketsFromPlayer(String player){
@@ -125,7 +131,7 @@ public class SQLite {
 
     public static ArrayList<String> getTicketsFromPlayer(String player){
         ArrayList<String> tickets = new ArrayList<String>();
-        String sql = "SELECT ticket, nickname, type, staff, is_answered FROM Tickets WHERE nickname = ?";
+        String sql = "SELECT ticket, nickname, type, staff, is_answered FROM Tickets WHERE nickname = ? ORDER BY is_answered ASC";
 
         try (Connection conn = connect();
              PreparedStatement pstmt  = conn.prepareStatement(sql)){

@@ -19,7 +19,7 @@ messages:
         - ""
         - "§2Clique aqui para voltar."
     cancel_message: "Digite &ccancel &fou &ccancelar &fpara sair."
-    cancel_word: "Cancelar" #Não use cores
+    cancel_word: "cancelar" #Não use cores
     ticketgui:
       menu_title: "&4Tickets Abertos - [&f$count$&4]"
       ticketadd_item:

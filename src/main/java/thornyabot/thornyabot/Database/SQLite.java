@@ -129,6 +129,27 @@ public class SQLite {
         return tickets;
     }
 
+    public static ArrayList<String> getAllTickets(){
+        ArrayList<String> tickets = new ArrayList<String>();
+        String sql = "SELECT ticket, nickname, type, staff, is_answered FROM Tickets ORDER BY is_answered ASC";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+            ResultSet rs  = pstmt.executeQuery();
+            while(rs.next()){
+                tickets.add(rs.getString("ticket") + "&&&" +
+                        rs.getString("nickname") + "&&&" +
+                        rs.getString("type") + "&&&" +
+                        rs.getString("staff") + "&&&" +
+                        rs.getString("is_answered") + "&&&");
+            }
+            rs.close();
+        }catch (SQLException e){
+
+            System.out.println(e.getMessage());
+        }
+        return tickets;
+    }
     public static ArrayList<String> getTicketsFromPlayer(String player){
         ArrayList<String> tickets = new ArrayList<String>();
         String sql = "SELECT ticket, nickname, type, staff, is_answered FROM Tickets WHERE nickname = ? ORDER BY is_answered ASC";

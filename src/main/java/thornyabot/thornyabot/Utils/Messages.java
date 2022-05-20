@@ -24,6 +24,11 @@ public interface Messages {
     String TICKETGUI_MENU_TITLE = replaceChar(Config.getFile("config.yml").getString("messages.tickets.ticketgui.menu_title"));
     String TICKETGUI_ITEM_OPEN_TITLE = replaceChar(Config.getFile("config.yml").getString("messages.tickets.ticketgui.ticketadd_item.ticketadd_title"));
     List<String> TICKETGUI_ITEM_OPEN_LORE = Config.getFile("config.yml").getStringList("messages.tickets.ticketgui.ticketadd_item.ticketadd_lore");
+    //TIckets_GUI_Item
+    String TICKETGUI_ITEM_NEXT_PAGE_TITLE = replaceChar(Config.getFile("config.yml").getString("messages.tickets.ticketgui.item_next_page.next_page_title"));
+    List<String> TICKETGUI_ITEM_NEXT_PAGE_LORE = Config.getFile("config.yml").getStringList("messages.tickets.ticketgui.item_next_page.next_page_lore");
+    String TICKETGUI_ITEM_PREVIOUS_PAGE_TITLE = replaceChar(Config.getFile("config.yml").getString("messages.tickets.ticketgui.item_previous_page.previous_page_title"));
+    List<String> TICKETGUI_ITEM_PREVIOUS_PAGE_LORE = Config.getFile("config.yml").getStringList("messages.tickets.ticketgui.item_previous_page.previous_page_lore");
     //Ticket_Item
     String TICKETS_ITEM_TITLE = replaceChar(Config.getFile("config.yml").getString("messages.tickets.ticketgui.tickets_item.tickets_title"));
     List<String> TICKETS_ITEM_LORE = Config.getFile("config.yml").getStringList("messages.tickets.ticketgui.tickets_item.tickets_lore");

@@ -27,6 +27,12 @@ messages:
         ticketadd_lore:
           - " "
           - "&bAbra um ticket"
+      item_next_page:
+        next_page_title: "Proxima Pagina"
+        next_page_lore: "teste1"
+      item_previous_page:
+        previous_page_title: "Pagina Anterior"
+        previous_page_lore: "teste2"
       tickets_item:
         tickets_title: "&eTicket #{ticketid}"
         tickets_lore:

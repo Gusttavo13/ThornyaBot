@@ -100,6 +100,28 @@ public class Tickets implements CommandExecutor {
             lore.clear();
             gui.addItem(tickets);
         });
+        GuiItem empty_panel = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).name(Component.text(" ")).asGuiItem();
+        GuiItem previous_item = ItemBuilder.from(Material.GREEN_STAINED_GLASS_PANE).name(Component.text(Messages.TICKETGUI_ITEM_PREVIOUS_PAGE_TITLE)).asGuiItem(event -> {
+            gui.previous();
+            if (gui.getCurrentPageNum() == 1) {
+                gui.updatePageItem(6, 3, empty_panel);
+            }
+        });
+        GuiItem next_item = ItemBuilder.from(Material.GREEN_STAINED_GLASS_PANE).name(Component.text(Messages.TICKETGUI_ITEM_NEXT_PAGE_TITLE)).asGuiItem(event -> {
+            gui.next();
+            if (gui.getCurrentPageNum() > 1) {
+                gui.updatePageItem(6, 3, previous_item);
+            }
+        });
+
+        gui.setItem(6,1, empty_panel);
+        gui.setItem(6,2, empty_panel);
+        gui.setItem(6, 3, (gui.getCurrentPageNum() > 1 ? previous_item : empty_panel));//pre
+        gui.setItem(6,4, empty_panel);
+        gui.setItem(6,6, empty_panel);
+        gui.setItem(6,7, (SQLite.getCountTicketsFromPlayer(p.getName()) > 45? next_item : empty_panel)); //next
+        gui.setItem(6,8, empty_panel);
+        gui.setItem(6,9, empty_panel);
         gui.setItem(6, 5, addTicket);
         gui.open(p);
     }

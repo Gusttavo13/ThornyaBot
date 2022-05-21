@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.bukkit.Bukkit;
 import thornyabot.thornyabot.Discord.Commands.Tickets;
+import thornyabot.thornyabot.Discord.Commands.Verify;
 import thornyabot.thornyabot.Utils.Config;
 
 import javax.security.auth.login.LoginException;
@@ -33,6 +34,7 @@ public class BotManager {
                         .setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER))
                         .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS)
                         .addEventListeners(new Tickets())
+                        .addEventListeners(new Verify())
                         .setActivity(Activity.playing(Config.getFile("config.yml").getString("description")))
                         .build().awaitReady();
                 registerCommands();

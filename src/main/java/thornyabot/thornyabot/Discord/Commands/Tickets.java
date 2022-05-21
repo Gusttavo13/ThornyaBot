@@ -145,21 +145,21 @@ public class Tickets extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         if (!event.getName().equals("devticket")) return; // make sure we handle the right command
-        event.deferReply().queue();
+        event.deferReply(false).queue();
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("✅ Sistema de tickets do Thornya ✅")
                 .setDescription("Fale com o nosso suporte, abra um ticket!\n\nClique no botão para abrir um ticket.")
                 .setColor(new Color(0x136300))
                 .setFooter("Thornya Tickets - Bot", "https://minotar.net/avatar/robot");
-        BotManager.guild.getTextChannelById("734945439006195735").sendMessageEmbeds(eb.build())
-                .setActionRow(Button.primary("addticket", "Abrir ticket")).queue(message -> messageID = message.getId());
+        BotManager.guild.getTextChannelById("977438348224393218").sendMessageEmbeds(eb.build())
+                .setActionRow(Button.primary("addticket", "Abrir ticket").asDisabled()).queue(message -> messageID = message.getId());
     }
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
         if (event.getComponentId().equals("ticketchat:close")) {
-
+            event.deferReply(false).queue();
             Role role = BotManager.guild.getRoleById(973727876161613854L);
             if(event.getMember().getRoles().contains(role)){
                 Log.LogDiscordText("O Staff " + event.getMember().getAsMention() + " fechou o ticket " + event.getChannel().getName().split("-")[1]);

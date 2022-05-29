@@ -144,15 +144,15 @@ public class Tickets extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
-        if (!event.getName().equals("devticket")) return; // make sure we handle the right command
-        event.deferReply(false).queue();
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("✅ Sistema de tickets do Thornya ✅")
-                .setDescription("Fale com o nosso suporte, abra um ticket!\n\nClique no botão para abrir um ticket.")
-                .setColor(new Color(0x136300))
-                .setFooter("Thornya Tickets - Bot", "https://minotar.net/avatar/robot");
-        BotManager.guild.getTextChannelById("977438348224393218").sendMessageEmbeds(eb.build())
-                .setActionRow(Button.primary("addticket", "Abrir ticket").asDisabled()).queue(message -> messageID = message.getId());
+        //if (!event.getName().equals("devticket")) return; // make sure we handle the right command
+        //event.deferReply(false).queue();
+        //EmbedBuilder eb = new EmbedBuilder();
+        //eb.setTitle("✅ Sistema de tickets do Thornya ✅")
+        //        .setDescription("Fale com o nosso suporte, abra um ticket!\n\nClique no botão para abrir um ticket.")
+        //        .setColor(new Color(0x136300))
+        //        .setFooter("Thornya Tickets - Bot", "https://minotar.net/avatar/robot");
+        //BotManager.guild.getTextChannelById("977438348224393218").sendMessageEmbeds(eb.build())
+        //        .setActionRow(Button.primary("addticket", "Abrir ticket").asDisabled()).queue(message -> messageID = message.getId());
     }
 
     @Override

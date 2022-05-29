@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.bukkit.Bukkit;
+import thornyabot.thornyabot.Discord.Commands.ConfigurationButton;
 import thornyabot.thornyabot.Discord.Commands.Tickets;
 import thornyabot.thornyabot.Discord.Commands.Verify;
 import thornyabot.thornyabot.Utils.Config;
@@ -35,6 +36,7 @@ public class BotManager {
                         .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS)
                         .addEventListeners(new Tickets())
                         .addEventListeners(new Verify())
+                        .addEventListeners(new ConfigurationButton())
                         .setActivity(Activity.playing(Config.getFile("config.yml").getString("description")))
                         .build().awaitReady();
                 registerCommands();
